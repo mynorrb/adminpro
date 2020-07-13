@@ -118,10 +118,11 @@ crearUsuario( usuario: Usuario ) {
 
     return this.http.put( url, usuario ).pipe( map( (resp: any) => {
 
-      const usuarioDB: Usuario = resp.usuario;
 
-
-      this.guardarStorage( usuarioDB._id, this.token, usuarioDB );
+      if ( usuario._id === this.usuario._id){
+        let usuarioDB: Usuario = resp.usuario;
+        this.guardarStorage( usuarioDB._id, this.token, usuarioDB );
+      }
 
       swal('Usuario actualizado', usuario.nombre, 'success');
 
@@ -147,6 +148,36 @@ crearUsuario( usuario: Usuario ) {
          console.log(resp);
 
       });
+
+  }
+
+  cargarUsuarios( desde: number = 0 ){
+
+    const url = URL_SERVICIOS + '/usuario?desde=' + desde;
+
+    return this.http.get(url);
+
+  }
+
+  buscarUsuarios( termino: string) {
+
+    const url = URL_SERVICIOS + '/busqueda/coleccion/usuarios/' + termino;
+
+    return this.http.get(url).pipe( map ( (resp: any) => resp.usuarios ));
+
+  }
+
+  borrarUsuario( id: string) {
+
+    let url = URL_SERVICIOS + '/usuario/' + id;
+    url += '?token=' + this.token ;
+
+    return this.http.delete(url).pipe ( map ( (resp: any) => {
+
+        swal('Usuario borrado', 'El usuario ha sido eliminado correctamente', 'success');
+        return true;
+
+    }));
 
   }
 
